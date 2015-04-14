@@ -499,7 +499,6 @@ class OpenBugsManager(models.Manager):
         return super(OpenBugsManager, self).get_query_set().filter(
             looks_closed=False)
 
-
 class Bug(OpenHatchModel):
     project = models.ForeignKey(Project)
     title = models.CharField(max_length=500)
@@ -573,6 +572,13 @@ class Bug(OpenHatchModel):
         kwargs['project'] = Project.create_dummy()
         return Bug.create_dummy(**kwargs)
 
+class BugTag(OpenHatchModel):
+    CONTRIBUTION_TYPE_CHOICES = (
+        ('Documentation', 'Documentation'),
+        ('Design', 'Design'),
+    )
+    tag = models.CharField(max_length=1, choices=CONTRIBUTION_TYPE_CHOICES, null=False)
+    bug = models.ForeignKey(Bug)
 
 class BugAlert(OpenHatchModel):
     user = models.ForeignKey(User, null=True)

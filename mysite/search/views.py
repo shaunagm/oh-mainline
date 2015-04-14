@@ -185,7 +185,7 @@ def search_index(request, invalid_subscribe_to_alert_form=None):
 
 
 def bugs_to_json_response(data, bunch_of_bugs, callback_function_name=''):
-    """ The search results page accesses this view via jQuery's getJSON method, 
+    """ The search results page accesses this view via jQuery's getJSON method,
     and loads its results into the DOM."""
     # Purpose of this code: Serialize the list of bugs
     # Step 1: Pull the bugs out of the database, getting them back

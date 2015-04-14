@@ -145,12 +145,10 @@ class Query:
             q &= Q(project__display_name__iexact=project_value)
 
         # contribution type facet
-        contribution_type_is_active = ('contribution_type' in
-                                       self.active_facet_options.keys())
-        exclude_contribution_type = exclude_active_facets and contribution_type_is_active
-        if (self.active_facet_options.get('contribution_type', None) == 'documentation'
-                and not exclude_contribution_type):
-            q &= Q(concerns_just_documentation=True)
+        if (not exclude_active_facets and self.active_facet_options.get('contribution_type')):
+            if (self.active_facet_options.get('contribution_type') in
+                mysite.search.models.BugTag._meta.get_field_by_name('tag')[0].flatchoices):
+                q &= Q(bugtag__tag__exact=contribution_type)
 
         # NOTE: This is a terrible hack. We should stop doing this and
         # just ditch this entire class and swap it out for something like
@@ -279,8 +277,9 @@ class Query:
 
         toughness_options = self.get_facet_options(u'toughness', [u'bitesize'])
 
+        temp_options = [b for (a,b) in mysite.search.models.BugTag._meta.get_field_by_name('tag')[0].flatchoices]
         contribution_type_options = self.get_facet_options(
-            u'contribution_type', [u'documentation'])
+            u'contribution_type', temp_options)
 
         language_options = self.get_facet_options(
             u'language', self.get_language_names())
@@ -324,7 +323,7 @@ class Query:
                 u'the_any_option': self.get_facet_options(u'toughness', [u''])[0],
                 u'sorted_by': u'(# of bugs)',
             }),
-            (u'contribution type', {
+            (u'contribution_type', {
                 u'name_in_GET': u"contribution_type",
                 u'sidebar_heading': u"Just bugs labeled...",
                 u'description_above_results': u"which need %s",
